@@ -1,0 +1,21 @@
+{% extends "base.html" %}{% block content %}
+<h3>My Account</h3>
+
+<div class="card mb-3">
+  <div class="card-body">
+    <p><strong>Teacher No.</strong>: {{ person.teacher_no }}</p>
+    <p><strong>Name</strong>: {{ person.name }}</p>
+    <p><strong>Department</strong>: {{ person.dept or '-' }}</p>
+    <p><strong>Title</strong>: {{ person.title or '-' }}</p>
+    <p><strong>Username</strong>: {{ user.username }}</p>
+  </div>
+</div>
+
+<h5>Change Password</h5>
+<form method="post" class="row g-2" style="max-width:520px">
+  <div class="col-12"><input type="password" class="form-control" name="old_password" placeholder="Current password" required></div>
+  <div class="col-12"><input type="password" class="form-control" name="new_password" placeholder="New password (>=6 chars)" required></div>
+  <div class="col-12"><input type="password" class="form-control" name="confirm_password" placeholder="Confirm new password" required></div>
+  <div class="col-12"><button class="btn btn-primary">Update</button></div>
+</form>
+{% endblock %}

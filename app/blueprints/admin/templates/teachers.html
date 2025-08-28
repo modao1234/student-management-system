@@ -1,0 +1,67 @@
+{% extends "base.html" %}{% block content %}
+<h3>Teachers</h3>
+
+<form class="row g-2 mb-3" method="get" action="{{ url_for('admin.teachers') }}">
+  <div class="col-auto"><input class="form-control" name="q" placeholder="Search by No./Name/Dept/Title" value="{{ q or '' }}"></div>
+  <div class="col-auto">
+    <select class="form-select" name="sort">
+      <option value="teacher_no" {{ 'selected' if sort=='teacher_no' else '' }}>Teacher No.</option>
+      <option value="name" {{ 'selected' if sort=='name' else '' }}>Name</option>
+      <option value="dept" {{ 'selected' if sort=='dept' else '' }}>Department</option>
+      <option value="title" {{ 'selected' if sort=='title' else '' }}>Title</option>
+    </select>
+  </div>
+  <div class="col-auto">
+    <select class="form-select" name="order">
+      <option value="asc"  {{ 'selected' if order=='asc'  else '' }}>Asc</option>
+      <option value="desc" {{ 'selected' if order=='desc' else '' }}>Desc</option>
+    </select>
+  </div>
+  <div class="col-auto"><button class="btn btn-outline-primary">Filter</button></div>
+</form>
+
+<form class="row g-2 mb-4" method="post" action="{{ url_for('admin.create_teacher') }}">
+  <div class="col-auto"><input class="form-control" name="teacher_no" placeholder="Teacher No. (unique)" required></div>
+  <div class="col-auto"><input class="form-control" name="name" placeholder="Name" required></div>
+  <div class="col-auto"><input class="form-control" name="dept" placeholder="Department"></div>
+  <div class="col-auto"><input class="form-control" name="title" placeholder="Title"></div>
+  <div class="col-auto"><button class="btn btn-primary">Add</button></div>
+</form>
+
+<table class="table table-striped align-middle">
+  <thead><tr>
+    <th>Teacher No.</th><th>Name</th><th>Department</th><th>Title</th><th>Actions</th>
+  </tr></thead>
+  <tbody>
+  {% for t in items %}
+    <tr>
+      <form class="row row-cols-lg-auto g-1" method="post" action="{{ url_for('admin.update_teacher', tid=t.id) }}">
+        <td><input class="form-control" name="teacher_no" value="{{ t.teacher_no }}"></td>
+        <td><input class="form-control" name="name" value="{{ t.name }}"></td>
+        <td><input class="form-control" name="dept" value="{{ t.dept or '' }}"></td>
+        <td><input class="form-control" name="title" value="{{ t.title or '' }}"></td>
+        <td class="d-flex gap-2">
+          <button class="btn btn-sm btn-outline-primary">Save</button>
+      </form>
+          <form method="post" action="{{ url_for('admin.delete_teacher', tid=t.id) }}" onsubmit="return confirm('Delete this teacher?');">
+            <button class="btn btn-sm btn-outline-danger">Delete</button>
+          </form>
+        </td>
+    </tr>
+  {% endfor %}
+  {% if not items %}<tr><td colspan="5" class="text-muted">No data</td></tr>{% endif %}
+  </tbody>
+</table>
+
+<nav>
+  <ul class="pagination">
+    <li class="page-item {{ 'disabled' if page<=1 }}">
+      <a class="page-link" href="{{ url_for('admin.teachers', page=page-1, per_page=per_page, q=q, sort=sort, order=order) }}">«</a>
+    </li>
+    <li class="page-item disabled"><span class="page-link">{{ page }}/{{ pages }}</span></li>
+    <li class="page-item {{ 'disabled' if page>=pages }}">
+      <a class="page-link" href="{{ url_for('admin.teachers', page=page+1, per_page=per_page, q=q, sort=sort, order=order) }}">»</a>
+    </li>
+  </ul>
+</nav>
+{% endblock %}

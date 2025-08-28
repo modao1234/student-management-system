@@ -1,0 +1,31 @@
+{% extends "base.html" %}{% block content %}
+<h3>Grade book({{ section.course.name }}|{{ section.term }})</h3>
+<form method="post">
+  <table class="table table-bordered align-middle">
+    <thead>
+      <tr>
+        <th>Student</th>
+        {% for a in section.assessments %}
+          <th>{{ a.title }}<br><small>Weight{{ (a.weight*100)|round(0) }}% / Full score{{ a.full_score }}</small></th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for en in section.enrollments %}
+        <tr>
+          <td>{{ en.student.name }}({{ en.student.student_no }})</td>
+          {% for a in section.assessments %}
+            {% set key = (en.id, a.id) %}
+            <td style="width: 10rem;">
+              <input class="form-control" name="scores-{{ en.id }}-{{ a.id }}"
+                     value="{{ grade_map.get(key) if grade_map.get(key) is not none else '' }}"
+                     placeholder="Score">
+            </td>
+          {% endfor %}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <button class="btn btn-primary">Save</button>
+</form>
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Optional classes{% if term %}({{ term }}){% endif %}</h3>
+
+<form class="row g-2 mb-3" method="get" action="{{ url_for('admin.sections') }}">
+  <div class="col-auto"><input class="form-control" name="term" placeholder="Term" value="{{ term or '' }}"></div>
+  <div class="col-auto"><input class="form-control" name="q" placeholder="Course/Code/Teacher" value="{{ q or '' }}"></div>
+  <div class="col-auto"><button class="btn btn-outline-primary">筛选</button></div>
+</form>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th><a href="?{{ request.query_string|safe }}&sort=term&order={{ 'asc' if order=='desc' else 'desc' }}">Term</a></th>
+      <th><a href="?{{ request.query_string|safe }}&sort=course&order={{ 'asc' if order=='desc' else 'desc' }}">Course</a></th>
+      <th><a href="?{{ request.query_string|safe }}&sort=teacher&order={{ 'asc' if order=='desc' else 'desc' }}">Teacher</a></th>
+      <th><a href="?{{ request.query_string|safe }}&sort=cap&order={{ 'asc' if order=='desc' else 'desc' }}">Capacity</a></th>
+      <th>Class Scheduling</th><th>Operate</th>
+    </tr>
+  </thead>
+  ...
+</table>
+
+<nav>
+  <ul class="pagination">
+    <li class="page-item {{ 'disabled' if page<=1 }}"><a class="page-link" href="?page={{ page-1 }}&per_page={{ per_page }}&term={{ term }}&q={{ q }}&sort={{ sort }}&order={{ order }}">«</a></li>
+    <li class="page-item disabled"><span class="page-link">{{ page }}/{{ pages }}</span></li>
+    <li class="page-item {{ 'disabled' if page>=pages }}"><a class="page-link" href="?page={{ page+1 }}&per_page={{ per_page }}&term={{ term }}&q={{ q }}&sort={{ sort }}&order={{ order }}">»</a></li>
+  </ul>
+</nav>
+
+<form class="mb-3" method="get">
+  <div class="input-group">
+    <input class="form-control" name="term" placeholder="Term such as 2025S" value="{{ term or '' }}">
+    <button class="btn btn-primary" type="submit">Filter</button>
+  </div>
+</form>
+
+<table class="table table-striped">
+  <thead>
+    <tr><th>Term</th><th>Teacher</th><th>Timeslots</th><th>Capacity</th><th>Operate</th></tr>
+  </thead>
+  <tbody>
+  {% for s in sections %}
+    <tr>
+      <td>{{ s.course.name }} ({{ s.course.code }})</td>
+      <td>{{ s.teacher.name }}</td>
+      <td>
+        {% for t in s.timeslots %}
+        {{ t.weekday | weekday_name }} {{ t.start_time.strftime("%H:%M") }}-{{ t.end_time.strftime("%H:%M") }} {{ t.room }}<br>
+        {% endfor %}
+      </td>
+      <td>{{ counts[s.id] }}/{{ s.capacity }}</td>
+      <td>
+        {% set eid = my_enroll.get(s.id) %}
+        {% if eid %}
+          <form method="post" action="{{ url_for('student.drop', enroll_id=eid) }}" style="display:inline">
+            {# if CSRF{{ csrf_token() }} #}
+            <button class="btn btn-sm btn-outline-danger">Drop</button>
+          </form>
+        {% else %}
+          <form method="post" action="{{ url_for('student.enroll', section_id=s.id) }}" style="display:inline">
+            {# if CSRF{{ csrf_token() }} #}
+            <button class="btn btn-sm btn-success">Enroll</button>
+          </form>
+        {% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

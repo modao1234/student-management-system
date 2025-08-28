@@ -1,0 +1,92 @@
+{% extends "base.html" %}{% block content %}
+<h3>Class management</h3>
+
+<form class="row g-2 mb-3" method="get" action="{{ url_for('admin.sections') }}">
+  <div class="col-auto">
+    <input class="form-control" name="term" placeholder="Term" value="{{ term or '' }}">
+  </div>
+  <div class="col-auto">
+    <input class="form-control" name="q" placeholder="Course/Code/Teacher" value="{{ q or '' }}">
+  </div>
+  <div class="col-auto">
+    <select class="form-select" name="per_page">
+      {% for n in [10,20,50] %}<option value="{{n}}" {{ 'selected' if per_page==n else '' }}>{{n}}/Page</option>{% endfor %}
+    </select>
+  </div>
+  <div class="col-auto">
+    <button class="btn btn-outline-primary">Filter</button>
+  </div>
+</form>
+
+<form class="row g-2 mb-3" method="post" action="{{ url_for('admin.create_section') }}">
+  <div class="col-auto">
+    <select class="form-select" name="course_id">
+      {% for c in courses %}<option value="{{ c.id }}">{{ c.code }} - {{ c.name }}</option>{% endfor %}
+    </select>
+  </div>
+  <div class="col-auto">
+    <select class="form-select" name="teacher_id">
+      {% for t in teachers %}<option value="{{ t.id }}">{{ t.teacher_no }} - {{ t.name }}</option>{% endfor %}
+    </select>
+  </div>
+  <div class="col-auto"><input class="form-control" name="term" placeholder="Term such as 2025S"></div>
+  <div class="col-auto"><input class="form-control" name="capacity" placeholder="Capacity" value="60"></div>
+  <div class="col-auto"><button class="btn btn-primary">New</button></div>
+</form>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>
+        <a href="{{ url_for('admin.sections', page=page, per_page=per_page, term=term, q=q, sort='term', order=('asc' if order=='desc' else 'desc')) }}">
+          Term
+        </a>
+      </th>
+      <th>
+        <a href="{{ url_for('admin.sections', page=page, per_page=per_page, term=term, q=q, sort='course', order=('asc' if order=='desc' else 'desc')) }}">
+          Course
+        </a>
+      </th>
+      <th>
+        <a href="{{ url_for('admin.sections', page=page, per_page=per_page, term=term, q=q, sort='teacher', order=('asc' if order=='desc' else 'desc')) }}">
+          Teacher
+        </a>
+      </th>
+      <th>
+        <a href="{{ url_for('admin.sections', page=page, per_page=per_page, term=term, q=q, sort='cap', order=('asc' if order=='desc' else 'desc')) }}">
+          Capacity
+        </a>
+      </th>
+      <th>Class Scheduling</th><th>Operate</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for s in sections %}
+    <tr>
+      <td>{{ s.term }}</td>
+      <td>{{ s.course.name }} ({{ s.course.code }})</td>
+      <td>{{ s.teacher.name }}</td>
+      <td>{{ s.capacity }}</td>
+      <td><a class="btn btn-sm btn-outline-primary" href="{{ url_for('admin.timeslots', sid=s.id) }}">Managing Time</a></td>
+      <td>
+        <form method="post" action="{{ url_for('admin.delete_section', sid=s.id) }}">
+          <button class="btn btn-sm btn-outline-danger">Delete</button>
+        </form>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+<nav>
+  <ul class="pagination">
+    <li class="page-item {{ 'disabled' if page<=1 }}">
+      <a class="page-link" href="{{ url_for('admin.sections', page=page-1, per_page=per_page, term=term, q=q, sort=sort, order=order) }}">«</a>
+    </li>
+    <li class="page-item disabled"><span class="page-link">{{ page }}/{{ pages }}</span></li>
+    <li class="page-item {{ 'disabled' if page>=pages }}">
+      <a class="page-link" href="{{ url_for('admin.sections', page=page+1, per_page=per_page, term=term, q=q, sort=sort, order=order) }}">»</a>
+    </li>
+  </ul>
+</nav>
+{% endblock %}

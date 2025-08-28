@@ -1,0 +1,18 @@
+{% extends "base.html" %}{% block content %}
+<h3>My classes</h3>
+<table class="table">
+  <thead><tr><th>Term</th><th>Couse</th><th>Operate</th></tr></thead>
+  <tbody>
+  {% for s in sections %}
+    <tr>
+      <td>{{ s.term }}</td>
+      <td>{{ s.course.name }} ({{ s.course.code }})</td>
+      <td>
+        <a class="btn btn-sm btn-outline-primary" href="{{ url_for('teacher.manage_assessments', section_id=s.id) }}">Assessment Items</a>
+        <a class="btn btn-sm btn-primary" href="{{ url_for('teacher.gradebook', section_id=s.id) }}">Gradebook</a>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

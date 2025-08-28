@@ -1,0 +1,70 @@
+{% extends "base.html" %}{% block content %}
+<h3>Students</h3>
+
+<form class="row g-2 mb-3" method="get" action="{{ url_for('admin.students') }}">
+  <div class="col-auto"><input class="form-control" name="q" placeholder="Search by No./Name/Major" value="{{ q or '' }}"></div>
+  <div class="col-auto">
+    <select class="form-select" name="sort">
+      <option value="student_no" {{ 'selected' if sort=='student_no' else '' }}>Student No.</option>
+      <option value="name" {{ 'selected' if sort=='name' else '' }}>Name</option>
+      <option value="major" {{ 'selected' if sort=='major' else '' }}>Major</option>
+      <option value="year" {{ 'selected' if sort=='year' else '' }}>Grade Year</option>
+      <option value="enroll" {{ 'selected' if sort=='enroll' else '' }}>Enroll Year</option>
+    </select>
+  </div>
+  <div class="col-auto">
+    <select class="form-select" name="order">
+      <option value="asc"  {{ 'selected' if order=='asc'  else '' }}>Asc</option>
+      <option value="desc" {{ 'selected' if order=='desc' else '' }}>Desc</option>
+    </select>
+  </div>
+  <div class="col-auto"><button class="btn btn-outline-primary">Filter</button></div>
+</form>
+
+<form class="row g-2 mb-4" method="post" action="{{ url_for('admin.create_student') }}">
+  <div class="col-auto"><input class="form-control" name="student_no" placeholder="Student No. (unique)" required></div>
+  <div class="col-auto"><input class="form-control" name="name" placeholder="Name" required></div>
+  <div class="col-auto"><input class="form-control" name="major" placeholder="Major"></div>
+  <div class="col-auto"><input class="form-control" name="grade_year" placeholder="Grade Year"></div>
+  <div class="col-auto"><input class="form-control" name="enroll_year" placeholder="Enroll Year"></div>
+  <div class="col-auto"><button class="btn btn-primary">Add</button></div>
+</form>
+
+<table class="table table-striped align-middle">
+  <thead><tr>
+    <th>Student No.</th><th>Name</th><th>Major</th><th>Grade Year</th><th>Enroll Year</th><th>Actions</th>
+  </tr></thead>
+  <tbody>
+  {% for s in items %}
+    <tr>
+      <form class="row row-cols-lg-auto g-1" method="post" action="{{ url_for('admin.update_student', sid=s.id) }}">
+        <td><input class="form-control" name="student_no" value="{{ s.student_no }}"></td>
+        <td><input class="form-control" name="name" value="{{ s.name }}"></td>
+        <td><input class="form-control" name="major" value="{{ s.major or '' }}"></td>
+        <td><input class="form-control" name="grade_year" value="{{ s.grade_year or '' }}"></td>
+        <td><input class="form-control" name="enroll_year" value="{{ s.enroll_year or '' }}"></td>
+        <td class="d-flex gap-2">
+          <button class="btn btn-sm btn-outline-primary">Save</button>
+      </form>
+          <form method="post" action="{{ url_for('admin.delete_student', sid=s.id) }}" onsubmit="return confirm('Delete this student?');">
+            <button class="btn btn-sm btn-outline-danger">Delete</button>
+          </form>
+        </td>
+    </tr>
+  {% endfor %}
+  {% if not items %}<tr><td colspan="6" class="text-muted">No data</td></tr>{% endif %}
+  </tbody>
+</table>
+
+<nav>
+  <ul class="pagination">
+    <li class="page-item {{ 'disabled' if page<=1 }}">
+      <a class="page-link" href="{{ url_for('admin.students', page=page-1, per_page=per_page, q=q, sort=sort, order=order) }}">«</a>
+    </li>
+    <li class="page-item disabled"><span class="page-link">{{ page }}/{{ pages }}</span></li>
+    <li class="page-item {{ 'disabled' if page>=pages }}">
+      <a class="page-link" href="{{ url_for('admin.students', page=page+1, per_page=per_page, q=q, sort=sort, order=order) }}">»</a>
+    </li>
+  </ul>
+</nav>
+{% endblock %}

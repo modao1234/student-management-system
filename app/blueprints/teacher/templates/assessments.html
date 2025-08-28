@@ -1,0 +1,26 @@
+{% extends "base.html" %}{% block content %}
+<h3>Assessment Items({{ section.course.name }}|{{ section.term }})</h3>
+<form method="post" class="row g-2 mb-3">
+  <div class="col-auto"><input class="form-control" name="title" placeholder="Title such as Final"></div>
+  <div class="col-auto"><input class="form-control" name="weight" placeholder="Weight 0~1"></div>
+  <div class="col-auto"><input class="form-control" name="full_score" placeholder="Full score" value="100"></div>
+  <div class="col-auto"><button class="btn btn-primary" type="submit">Add</button></div>
+</form>
+<table class="table">
+  <thead><tr><th>Title</th><th>Weight</th><th>Full score</th><th>Operate</th></tr></thead>
+  <tbody>
+  {% for a in assessments %}
+    <tr>
+      <td>{{ a.title }}</td>
+      <td>{{ a.weight }}</td>
+      <td>{{ a.full_score }}</td>
+      <td>
+        <form method="post" action="{{ url_for('teacher.delete_assessment', aid=a.id) }}">
+          <button class="btn btn-sm btn-outline-danger">Delete</button>
+        </form>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

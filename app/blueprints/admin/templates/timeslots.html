@@ -1,0 +1,33 @@
+{% extends "base.html" %}{% block content %}
+<h3>Class Schedule: {{ sec.course.name }} ({{ sec.course.code }}) | {{ sec.term }} | {{ sec.teacher.name }}</h3>
+
+<form class="row g-2 mb-3" method="post" action="{{ url_for('admin.create_timeslot', sid=sec.id) }}">
+  <div class="col-auto">
+    <select class="form-select" name="weekday">
+      {% for i in range(1,8) %}<option value="{{ i }}">{{ i }}</option>{% endfor %}
+    </select>
+  </div>
+  <div class="col-auto"><input class="form-control" name="start" placeholder="Start HH:MM" value="10:00"></div>
+  <div class="col-auto"><input class="form-control" name="end" placeholder="End HH:MM" value="11:40"></div>
+  <div class="col-auto"><input class="form-control" name="room" placeholder="Room, e.g., A101"></div>
+  <div class="col-auto"><button class="btn btn-primary">New</button></div>
+</form>
+
+<table class="table">
+  <thead><tr><th>Weekday</th><th>Time</th><th>Room</th><th>Actions</th></tr></thead>
+  <tbody>
+  {% for t in sec.timeslots %}
+    <tr>
+      <td>{{ t.weekday | weekday_name }}</td>
+      <td>{{ t.start_time.strftime("%H:%M") }} - {{ t.end_time.strftime("%H:%M") }}</td>
+      <td>{{ t.room }}</td>
+      <td>
+        <form method="post" action="{{ url_for('admin.delete_timeslot', tid=t.id) }}">
+          <button class="btn btn-sm btn-outline-danger">Delete</button>
+        </form>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}{% block content %}
+<h3>My grades</h3>
+{% for c in courses %}
+  <div class="card mb-3">
+    <div class="card-header d-flex justify-content-between">
+      <span>{{ c.course }} | Term:{{ c.term }}</span>
+      <strong>Total: {{ c.total_percent }}%</strong>
+    </div>
+    <div class="card-body p-0">
+      <table class="table mb-0">
+        <thead><tr><th>Assessment Items</th><th>Weight</th><th>Full score</th><th>Score</th></tr></thead>
+        <tbody>
+        {% for r in c.rows %}
+          <tr>
+            <td>{{ r.title }}</td>
+            <td>{{ (r.weight*100)|round(0) }}%</td>
+            <td>{{ r.full }}</td>
+            <td>{{ r.score if r.score is not none else '-' }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endfor %}
+{% endblock %}

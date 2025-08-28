@@ -1,0 +1,24 @@
+{% extends "base.html" %}{% block content %}
+<h3>Course Management</h3>
+<form class="row g-2 mb-3" method="post" action="{{ url_for('admin.create_course') }}">
+  <div class="col-auto"><input class="form-control" name="code" placeholder="Course number, such as CS101"></div>
+  <div class="col-auto"><input class="form-control" name="name" placeholder="Course name such as Intro CS"></div>
+  <div class="col-auto"><input class="form-control" name="credits" placeholder="credit" value="3"></div>
+  <div class="col-auto"><button class="btn btn-primary">New</button></div>
+</form>
+<table class="table table-striped">
+  <thead><tr><th>Course Number</th><th>Name</th><th>Credits</th><th>Operate</th></tr></thead>
+  <tbody>
+  {% for c in items %}
+    <tr>
+      <td>{{ c.code }}</td><td>{{ c.name }}</td><td>{{ c.credits }}</td>
+      <td>
+        <form method="post" action="{{ url_for('admin.delete_course', cid=c.id) }}">
+          <button class="btn btn-sm btn-outline-danger">Delete</button>
+        </form>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
